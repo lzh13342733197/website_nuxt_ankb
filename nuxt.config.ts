@@ -1,4 +1,3 @@
-
 // 导入 SVG 图标插件
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 // 导入 Node.js 路径模块（用于拼接目录路径）
@@ -29,10 +28,9 @@ export default defineNuxtConfig({
     host: '0.0.0.0' // 允许通过本机IP访问
   },
 
-  modules: ['@nuxtjs/i18n'],
+  modules: ['@nuxtjs/i18n', '@nuxt/image'],
   plugins: [{
-    src: 'plugins/lazyload.client.ts',
-    ssr: false
+    src: 'plugins/lazyload.client.js',
   }, {
     src: 'plugins/element-plus.client.ts',
     mode: 'client'

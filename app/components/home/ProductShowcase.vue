@@ -23,11 +23,11 @@
               <div class=" clearfix">
                 <ul class="pro-container" v-if="products.length">
                   <li v-for="product in products" :key="product.id" class="pro-item" pc-col="3">
-                    <a :href="`/product-detailInfo?id=${product.id}`" target="_self" class="pro-link">
+                    <a :href="`/product-detailInfo/id=${product.id}`" target="_self" class="pro-link">
                       <div class="pro-img">
                         <div class="dummy"></div>
                         <div class="pro-img-wrap">
-                          <img :src="product.imageUrls.length && product.imageUrls[0]" :alt="product.name" :title="product.name" loading="lazy"
+                          <img :src="product.imageUrls.length && product.imageUrls[0]" :alt="product.name" :title="product.name" 
                             class="pc-img">
                         </div>
                       </div>

@@ -9,9 +9,10 @@
         :key="item.id"
       >
         <img
-          v-lazy="item.logo"
+          :src="item.logo"
           :alt="item.name"
           class="partner-logo"
+          loading="lazy"
         />
       </div>
     </div>
