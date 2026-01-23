@@ -1,10 +1,7 @@
 <template>
   <div class="layout-root">
     <!-- 顶部导航，只在客户端渲染 -->
-    <ClientOnly>
       <NavigationBarPC class="NavigationBarPC" @jumpToCategory="handleJumpToCategory" />
-    </ClientOnly>
-
     <!-- 页面内容 -->
     <div>
       <NuxtPage />

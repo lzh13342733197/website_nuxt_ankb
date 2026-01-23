@@ -54,7 +54,8 @@
     </div>
 
     <!-- Mobile Drawer -->
-    <!-- <el-drawer
+     <client-only>
+    <el-drawer
       v-model="isMobileMenuOpen"
       direction="rtl"
       size="60%"
@@ -72,8 +73,8 @@
           {{ t(menu.name) }}
         </NuxtLink>
       </nav>
-    </el-drawer> -->
-
+    </el-drawer>
+     </client-only>
   </header>
 </template>
 
@@ -81,14 +82,21 @@
 import { ref, computed } from 'vue'
 import { useRoute } from '#app'
 import { useI18n } from 'vue-i18n'
-
+import { ElDrawer } from 'element-plus'
 const route = useRoute()
 const { t, locale } = useI18n()
 
 const isMobileMenuOpen = ref(false)
 const isLangOpen = ref(false)
-const isMobile = computed(() => window.innerWidth <= 1200)
-
+const isMobile = ref(false)
+onMounted(() => {
+  // 客户端初始化
+  isMobile.value = window.innerWidth <= 768
+  // 监听窗口缩放
+   window.addEventListener('resize', () => {
+    isMobile.value = window.innerWidth <= 768
+  })
+})
 /* 菜单 */
 const menus = computed(() => {
   const list = [
