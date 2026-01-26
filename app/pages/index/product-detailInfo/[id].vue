@@ -70,6 +70,7 @@
 import { ref, watch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { ElDialog } from 'element-plus'
 import detailSwiper from '~/components/product-detailInfo/detail-swiper.vue'
 import SkeletonComponent from '~/components/skeleton-component.vue'
 import SvgIcon from '~/components/SvgIcon.vue'
@@ -80,7 +81,7 @@ const router = useRouter()
 const isInquire = ref(false)
 const loading = ref(true)
 const productCategoryList = ref<any[]>([])
-const windowWidth = ref('')
+const windowWidth = ref('90%')
 onMounted(() => {
   windowWidth.value = globalThis.innerWidth <= 700 ? '90%' : '50%'
 })
@@ -97,27 +98,29 @@ const getProductCategoryList = async () => {
   productCategoryList.value = data || []
 }
 
-const { data: productAttrList } = useAsyncData('getproductAttrList', async () => {
+const { data: productAttrList } = useAsyncData(() => `getproductAttrList-${locale.value}`, async () => {
   const productId = route.params.id as string
+  const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
   try {
-    const response = await useFetchWithLanguage.post(`https://www.ankbit.com:8080/api/product/getProductSpuAttrList`, {
+    const response = await fetchWithLocale.post(`https://www.ankbit.com:8080/api/product/getProductSpuAttrList`, {
       productSpuId: productId
     })
 
-    console.log('获取产品属性列表成功:', response)
-    return response || []
+    console.log('获取产品属性列表成功:', response.data || [])
+    return response.data || []
   } catch (err) {
     console.warn('获取产品属性列表失败:', err)
     return [] // 返回空数组作为回退
   }
 })
-const { data: productDetail } = useAsyncData('getproductDetail', async () => {
+const { data: productDetail } = useAsyncData(() => `getproductDetail-${locale.value}`, async () => {
   const productId = route.params.id as string
+  const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
   try {
-    const response = await useFetchWithLanguage.get(`https://www.ankbit.com:8080/api/product/getProductSpuDetail?id=${productId}`)
+    const response = await fetchWithLocale.get(`https://www.ankbit.com:8080/api/product/getProductSpuDetail?id=${productId}`)
 
-    console.log('获取产品详情成功:', response)
-    return response || []
+    console.log('获取产品详情成功:', response.data || [])
+    return response.data || []
 
   } catch (err) {
     console.warn('获取产品详情失败:', err)

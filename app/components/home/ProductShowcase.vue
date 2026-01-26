@@ -23,12 +23,12 @@
               <div class=" clearfix">
                 <ul class="pro-container" v-if="products.length">
                   <li v-for="product in products" :key="product.id" class="pro-item" pc-col="3">
-                    <a :href="`/product-detailInfo/${product.id}`" target="_self" class="pro-link">
+                    <a :href="`/${locale}/product-detailInfo/${product.id}`" target="_self" class="pro-link">
                       <div class="pro-img">
                         <div class="dummy"></div>
                         <div class="pro-img-wrap">
-                          <img :src="product.imageUrls.length && product.imageUrls[0]" :alt="product.name" :title="product.name" 
-                            class="pc-img">
+                          <img :src="product.imageUrls.length && product.imageUrls[0]" :alt="product.name"
+                            :title="product.name" class="pc-img">
                         </div>
                       </div>
 
@@ -48,7 +48,7 @@
             </div>
           </div>
 
-          <div >
+          <div>
             <div class="clearfix">
               <div class="BodyCenter clearfix">
                 <a href="/productCenter" target="_self" class="moduleButton">
@@ -66,7 +66,7 @@
 <script setup>
 import { defineProps } from 'vue';
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+const { t ,locale} = useI18n()
 
 const props = defineProps({
   products: {
@@ -114,9 +114,11 @@ const props = defineProps({
   .pro-item {
     width: 50%;
   }
-  .PRODUCTS_SHOW{
+
+  .PRODUCTS_SHOW {
     font-size: 1.5rem !important;
   }
+
   .BodyCenter {
     width: 95%;
     max-width: 1200px;

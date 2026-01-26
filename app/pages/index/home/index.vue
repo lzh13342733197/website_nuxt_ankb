@@ -3,41 +3,52 @@
     <SocialMediaVideo style="margin: 0 auto" />
     <ProductShowcase :products="templateData" />
     <PatentsAwards />
-        <Patent_home />
+    <Patent_home />
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useFetchWithLanguage } from '~/utils/useFetchWithLanguage'
+import { useFetchWithLanguageWithLocale } from '~/utils/useFetchWithLanguage'
 import SwiperModule from '~/components/home/SwiperModule.vue'
 import SocialMediaVideo from '~/components/home/SocialMediaVideo.vue'
 import ProductShowcase from '~/components/home/ProductShowcase.vue'
 import PatentsAwards from '~/components/home/PatentsAwards.vue'
 import Patent_home from '~/components/home/Patent_home.vue'
-
+import { useRoute } from 'vue-router'
 
 import { useRuntimeConfig } from '#app'
-
+import axios from 'axios'
 // 获取运行时配置
-const config = useRuntimeConfig()
-const loading = ref(true)
-
-
+import { useI18n } from 'vue-i18n'
 onMounted(async () => {
 
 })
-const { data: templateData } = useAsyncData('templateData', async () => {
-    try {
-        const response = await useFetchWithLanguage.post(`https://www.ankbit.com:8080/api/product/show`)
-        console.log('API响应:', 'product/show')
+const { locale } = useI18n() // 当前语言
 
-        return response
-    } catch (err) {
-        console.warn('获取模板数据失败:', err)
-        return [] // 返回空数组作为回退
+
+
+// key 包含当前语言
+const { data: templateData } = useAsyncData(
+    () => `templateData-${locale.value}`, // 每种语言独立缓存
+    async () => {
+        // 每次请求动态传入当前语言
+        console.log('当前语言:', locale.value)
+        const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
+
+        try {
+            const response = await fetchWithLocale.post(
+                'https://www.ankbit.com:8080/api/product/show'
+            )
+            return response.data
+        } catch (err) {
+            console.warn('获取模板数据失败:', err)
+            return []
+        }
+    },
+    {
+        watch: () => locale.value // 监听语言变化自动刷新
     }
-})
-
+)
 // 简化设备类型判断，服务端默认使用'mobile'
 const getDeviceType = () => {
     // 在Nuxt中应该使用 process.client 检测客户端环境
@@ -49,17 +60,19 @@ const getDeviceType = () => {
     return 'mobile'
 }
 
-// 使用useAsyncData获取数据，确保服务端和客户端都能正确请求
-const { data:swiperList } = useAsyncData('bannerData', async () => {
+const { data: swiperList } = useAsyncData('bannerData', async () => {
     try {
         const deviceType = getDeviceType()
         console.log('banner/list:', deviceType)
-
-        const response = await useFetchWithLanguage.post(`https://www.ankbit.com:8080/api/banner/list`, { type: deviceType })
+        const response = await axios.post(`https://www.ankbit.com:8080/api/banner/list`, { type: deviceType }, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
         console.log('API响应:', 'banner/list')
 
         // 处理响应数据
-        const processedData = response.map((item) => ({
+        const processedData = response.data.data.map((item) => ({
             src: item.imageUrl,
             url: item.linkUrl,
             alt: item.title,
@@ -72,7 +85,6 @@ const { data:swiperList } = useAsyncData('bannerData', async () => {
         return [] // 返回空数组作为回退
     }
 })
-
 
 </script>
 

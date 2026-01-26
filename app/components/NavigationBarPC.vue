@@ -11,16 +11,8 @@
 
       <!-- PC Menu -->
       <nav class="nav-item nav-main-menu menu-pc">
-        <div
-          v-for="menu in menus"
-          :key="menu.id"
-          class="main-nav-group"
-        >
-          <NuxtLink
-            :to="menu.url"
-            class="main-nav-link"
-            :class="{ 'is-active': menu.isActive }"
-          >
+        <div v-for="menu in menus" :key="menu.id" class="main-nav-group">
+          <NuxtLink :to="menu.url" class="main-nav-link" :class="{ 'is-active': menu.isActive }">
             {{ t(menu.name) }}
           </NuxtLink>
         </div>
@@ -33,18 +25,41 @@
         <div class="tools-pc" v-if="!isMobile">
           <div class="lang-switch">
             <div class="lang-switch-border" @click="toggleLang">
-              {{ locale === 'zh' ? '中文' : 'English' }}
+              {{ locale === 'zh' ? 'Chinese' : 'English' }}
               <span>{{ isLangOpen ? '▲' : '▼' }}</span>
             </div>
             <ul v-if="isLangOpen" class="mobile-lang-list">
-              <li @click="setLang('zh')">中文</li>
-              <li @click="setLang('en')">English</li>
+              <!-- <li @click="switchLocalePath('zh')">中文</li>
+              <li @click="switchLocalePath('en')">English</li> -->
+              <li>
+                <SwitchLocalePathLink style="   color: black; text-decoration: none;" locale="zh">Chinese
+                </SwitchLocalePathLink>
+              </li>
+              <li>
+                <SwitchLocalePathLink style="   color: black; text-decoration: none;" locale="en">English
+                </SwitchLocalePathLink>
+              </li>
             </ul>
           </div>
         </div>
 
         <!-- Mobile -->
-        <div class="tools-mobile" >
+        <div class="tools-mobile">
+          <div class="mobile-lang-switch" @click="isMobileLangOpen = !isMobileLangOpen"
+            @mouseleave="isMobileLangOpen = false">
+            {{ locale === 'zh' ? 'Chinese' : 'English' }}
+            <span class="arrow-icon">{{ isMobileLangOpen ? '▲' : '▼' }}</span>
+            <ul v-if="isMobileLangOpen" class="mobile-lang-list">
+              <li>
+                <SwitchLocalePathLink style=" display: block; color: black; text-decoration: none;" locale="zh">Chinese
+                </SwitchLocalePathLink>
+              </li>
+              <li>
+                <SwitchLocalePathLink style=" display: block; color: black; text-decoration: none;" locale="en">English
+                </SwitchLocalePathLink>
+              </li>
+            </ul>
+          </div>
           <button class="hamburger-btn" @click="isMobileMenuOpen = !isMobileMenuOpen">
             ☰
           </button>
@@ -54,27 +69,17 @@
     </div>
 
     <!-- Mobile Drawer -->
-     <client-only>
-    <el-drawer
-      v-model="isMobileMenuOpen"
-      direction="rtl"
-      size="60%"
-      :with-header="false"
-    >
-      <nav class="mobile-nav-list" v-if="isMobileMenuOpen">
-        <NuxtLink
-          v-for="menu in menus"
-          :key="menu.id"
-          :to="menu.url"
-          class="mobile-nav-link"
-          :class="{ 'is-active': menu.isActive }"
-          @click="isMobileMenuOpen = false"
-        >
-          {{ t(menu.name) }}
-        </NuxtLink>
-      </nav>
-    </el-drawer>
-     </client-only>
+    <client-only>
+      <el-drawer v-model="isMobileMenuOpen" direction="rtl" size="60%" :with-header="false">
+        <nav class="mobile-nav-list" v-if="isMobileMenuOpen">
+          <NuxtLink v-for="menu in menus" :key="menu.id" :to="menu.url" class="mobile-nav-link"
+            :class="{ 'is-active': menu.isActive }" @click="isMobileMenuOpen = false">
+            {{ t(menu.name) }}
+          </NuxtLink>
+        </nav>
+
+      </el-drawer>
+    </client-only>
   </header>
 </template>
 
@@ -85,15 +90,15 @@ import { useI18n } from 'vue-i18n'
 import { ElDrawer } from 'element-plus'
 const route = useRoute()
 const { t, locale } = useI18n()
-
 const isMobileMenuOpen = ref(false)
+const isMobileLangOpen = ref(false)
 const isLangOpen = ref(false)
 const isMobile = ref(false)
 onMounted(() => {
   // 客户端初始化
   isMobile.value = window.innerWidth <= 768
   // 监听窗口缩放
-   window.addEventListener('resize', () => {
+  window.addEventListener('resize', () => {
     isMobile.value = window.innerWidth <= 768
   })
 })
@@ -107,10 +112,10 @@ const menus = computed(() => {
     { id: 5, name: 'navigationBar.Blog', url: '/Blog' },
     { id: 6, name: 'navigationBar.Contact', url: '/contact' }
   ]
-
+  console.log(route.path)
   return list.map(item => ({
     ...item,
-    isActive: route.path === item.url
+    isActive: route.path === `/${locale.value}${item.url}`
   }))
 })
 
@@ -183,10 +188,12 @@ const setLang = (lang: 'zh' | 'en') => {
   .menu-pc {
     display: none;
   }
+
   .tools-mobile {
     display: block;
   }
 }
+
 .header-container {
   position: sticky;
   top: 0;
@@ -396,15 +403,17 @@ const setLang = (lang: 'zh' | 'en') => {
   border: 1px solid #ccc;
   list-style: none;
   padding: 5px 0;
-  margin-top: 0; /* 贴合边框 */
+  margin-top: 0;
+  /* 贴合边框 */
   z-index: 1020;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-lang-list li {
   padding: 8px 10px;
   color: #333;
 }
+
 .active {
   background-color: #f5f5f5;
   color: #0095d7 !important;
@@ -416,13 +425,30 @@ const setLang = (lang: 'zh' | 'en') => {
 }
 
 @media (max-width: 992px) {
-  .menu-pc, .tools-pc { display: none !important; }
-  .tools-mobile { display: flex; }
+
+  .menu-pc,
+  .tools-pc {
+    display: none !important;
+  }
+
+  .tools-mobile {
+    display: flex;
+  }
 }
 
 @media (min-width: 993px) {
-  .menu-pc, .tools-pc { display: flex; }
-  .tools-mobile { display: none !important; }
-  .search-input { width: 80px; }
+
+  .menu-pc,
+  .tools-pc {
+    display: flex;
+  }
+
+  .tools-mobile {
+    display: none !important;
+  }
+
+  .search-input {
+    width: 80px;
+  }
 }
 </style>

@@ -21,13 +21,14 @@
                         <div class="blog-content">
                             <h3 class="blog-subtitle">{{ post.title }}</h3>
                             <!-- 去掉所有&nbsp -->
-                            <div class="blog-desc" style="display: none;" v-html="post.content.replace(/&nbsp/g, ' ')"></div>
+                            <div class="blog-desc" style="display: none;" v-html="post.content.replace(/&nbsp/g, ' ')">
+                            </div>
                             <!-- <p class="blog-desc">{{ post.title }}</p> -->
                         </div>
                     </div>
                 </div>
 
-                <div v-if="!isLoading &&blogPostsList && blogPostsList.length === 0" class="empty">No Blog yet.</div>
+                <div v-if="!isLoading && blogPostsList && blogPostsList.length === 0" class="empty">No Blog yet.</div>
             </div>
 
             <div v-if="isModalOpen" class="modal-mask" @click="closeDetailModal">
@@ -57,12 +58,12 @@ const isModalOpen = ref(false)
 const currentPost = ref<any>(null)
 const isMobile = ref(false)
 onMounted(() => {
-  // 客户端初始化
-  isMobile.value = window.innerWidth <= 768
-  // 监听窗口缩放
-   window.addEventListener('resize', () => {
+    // 客户端初始化
     isMobile.value = window.innerWidth <= 768
-  })
+    // 监听窗口缩放
+    window.addEventListener('resize', () => {
+        isMobile.value = window.innerWidth <= 768
+    })
 })
 
 const processedContent = computed(() => {
@@ -73,23 +74,27 @@ const processedContent = computed(() => {
 })
 
 
-const { data: blogPostsList } = useAsyncData('getblogDataList', async () => {
-    try {
-        const response = await useFetchWithLanguage.post(`https://www.ankbit.com:8080/api/article/pageList`, {
-            page: 1,
-            limit: 10
-        })
-        response?.list?.forEach(item => {
-            item.content = item.content.replace(/&nbsp;/g, ' ')
-        })
-        // console.log('获取分类列表成功:', response)
+const { data: blogPostsList } = useAsyncData(
+    () => `getblogDataList-${locale.value}`,
+    async () => {
+        const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
+        try {
+            const response = await fetchWithLocale.post(`https://www.ankbit.com:8080/api/article/pageList`, {
+                page: 1,
+                limit: 10
+            })
+            console.log('获取分类列表成功:', response?.data?.list?.length || 0)
+            response?.data?.list?.forEach(item => {
+                item.content = item.content.replace(/&nbsp;/g, ' ')
+            })
+            // console.log('获取分类列表成功:', response?.data?.list || [])
 
-        return response?.list || []
-    } catch (err) {
-        console.warn('获取分类列表失败:', err)
-        return [] // 返回空数组作为回退
-    }
-})
+            return response?.data?.list || []
+        } catch (err) {
+            console.warn('获取分类列表失败:', err)
+            return [] // 返回空数组作为回退
+        }
+    })
 
 
 

@@ -68,9 +68,9 @@ const factoryVideo = ref({
   placeholder: videoYoutube
 });
 const windowWidth = ref('');
-if(import.meta.client) {
-  windowWidth.value = window.innerWidth;
-}
+onMounted(() => {
+    windowWidth.value = window.innerWidth;
+})
 // 探测 YouTube 是否可访问
 const checkYouTube = () => {
   return new Promise((resolve) => {

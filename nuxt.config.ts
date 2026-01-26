@@ -44,16 +44,18 @@ export default defineNuxtConfig({
     legacy: false,
     locale: 'zh',
     fallbackLocale: 'en',
-    // strategy:'no_prefix',
+    strategy:'prefix',
     vueI18n: './i18n/index.js',
     allowHtml: true,
     allowHtmlMessage: true,
     locales: [
-      { code: 'zh', name: '中文', file: 'zh.js' },
-      { code: 'en', name: 'English', file: 'en.js' }
+      { code: 'zh', name: 'Chinese',iso: 'zh-Hans',  file: 'zh.js' },
+      { code: 'en', name: 'English',iso: 'en-US', file: 'en.js' }
     ],
-
-    // ✅ 注意：这里不写 app/
+    detectBrowserLanguage: {
+      enabled: true, // 自动检测浏览器语言
+      cookieKey: 'nuxt-i18n-lang' // 持久化到 cookie
+    },
     langDir: 'locales/lang/'
   },
   alias: {
