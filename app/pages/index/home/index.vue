@@ -37,7 +37,7 @@ const { data: templateData } = useAsyncData(
 
         try {
             const response = await fetchWithLocale.post(
-                'https://www.ankbit.com:8080/api/product/show'
+                `/product/show`,
             )
             return response.data
         } catch (err) {

@@ -131,7 +131,7 @@ const {data: productList} = useAsyncData('getProductSpuList', async () => {
   try {
     const response = await useFetchWithLanguage.post(
       // `${import.meta.env.VITE_API_URL}/product/getProductSpuList`,
-      `https://www.ankbit.com:8080/api/product/getProductSpuList`,
+      `/product/getProductSpuList`,
       {}
     )
     return response || []

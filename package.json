@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^25.0.9",
     "fast-glob": "^3.3.3",
+    "less": "^4.5.1",
     "vite-plugin-svg-icons": "^2.0.1"
   }
 }

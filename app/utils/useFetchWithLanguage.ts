@@ -41,8 +41,13 @@ const _request = async <T = any>(
 
 export const useFetchWithLanguageWithLocale = (localeValue: string) => {
   return {
+    
     post: (url: string, data: any = {}, options: any = {}) => {
-      return $fetch(url, {
+      const runtimeConfig = useRuntimeConfig()
+      const fullUrl = `${runtimeConfig.public.apiUrl}${url}`
+      // console.log('fullUrl===================>', runtimeConfig.public)
+
+      return $fetch(fullUrl, {
         method: 'POST',
         body: data,
         headers: {
@@ -52,7 +57,9 @@ export const useFetchWithLanguageWithLocale = (localeValue: string) => {
       })
     },
     get: (url: string, options: any = {}) => {
-      return $fetch(url, {
+      const runtimeConfig = useRuntimeConfig()
+      const fullUrl = `${runtimeConfig.public.apiUrl}${url}`
+      return $fetch(fullUrl, {
         method: 'GET',
         headers: {
           'Accept-Language': localeValue,

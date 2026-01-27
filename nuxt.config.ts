@@ -32,8 +32,7 @@ export default defineNuxtConfig({
   plugins: [{
     src: 'plugins/lazyload.client.js',
   }, {
-    src: 'plugins/element-plus.client.ts',
-    mode: 'client'
+    src: 'plugins/element-plus.ts',
   }, {
     src: 'plugins/svg-icons.ts',
     mode: 'client'

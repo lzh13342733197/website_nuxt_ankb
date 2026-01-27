@@ -2,18 +2,10 @@
   <!-- 产品分类列表容器 -->
   <div class="category-container">
     <h1 class="category-title">{{ $t('productDetail.productInfo') }}</h1>
-    <!-- 分类列表 - 改为纵向列表布局 -->
     <div class="category-list">
       <div class="category-item" v-for="category in categoryList" :key="category.id"
-        @click="handleClickCategory(category)">
-        <!-- <div class="category-text-wrapper">
-          <div class="category-name">{{ category.name }}</div>
-          <div class="category-desc">
-            {{ category.description }}
-          </div>
-          <div class="category-divider"></div>
-        </div>
-         -->
+        >
+        <a :href="`/${locale}/productCenter/${category.id}`">
         <!-- 右侧图片区域 -->
         <div class="category-image-wrapper">
           <img :src="isMobile ? category.imageMobileUrl : category.imagePCUrl" :alt="category.name"
@@ -21,13 +13,14 @@
           <!-- 悬浮装饰元素 -->
           <div class="category-hover-decoration"></div>
         </div>
+        </a>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed ,onUnmounted} from 'vue'
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
@@ -37,7 +30,7 @@ onMounted(() => {
   // 客户端初始化
   isMobile.value = window.innerWidth <= 768
   // 监听窗口缩放
-   window.addEventListener('resize', () => {
+  window.addEventListener('resize', () => {
     isMobile.value = window.innerWidth <= 768
   })
 })
@@ -49,13 +42,14 @@ onUnmounted(() => {
 })
 
 const { data: categoryList } = useAsyncData('getCategoryList', async () => {
-    try {
-        const response = await useFetchWithLanguage.post(`https://www.ankbit.com:8080/api/product/getCategoryList`,{})
-        return response
-    } catch (err) {
-        console.warn('获取分类列表失败:', err)
-        return [] // 返回空数组作为回退
-    }
+  const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
+  try {
+    const response = await fetchWithLocale.post(`/product/getCategoryList`, {})
+    return response.data
+  } catch (err) {
+    console.warn('获取分类列表失败:', err)
+    return [] // 返回空数组作为回退
+  }
 })
 
 // 图片加载失败处理
@@ -67,14 +61,10 @@ const handleImageError = (e: Event) => {
 
 // 分类点击事件
 const handleClickCategory = (category: any) => {
-  window.location.href = '/ProductCenter?categoryId=' + category.id
+  globalThis.location.href = `/productCenter/${category.id}`
 }
 
 
-// 监听语言切换
-// watch(locale, () => {
-//   getCategoryList()
-// })
 </script>
 
 <style scoped>

@@ -51,7 +51,7 @@
           <div>
             <div class="clearfix">
               <div class="BodyCenter clearfix">
-                <a href="/productCenter" target="_self" class="moduleButton">
+                <a href="/products" target="_self" class="moduleButton">
                   {{ $t('home.MORE') }}
                 </a>
               </div>

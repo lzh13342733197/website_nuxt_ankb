@@ -14,8 +14,8 @@
           {{ productDetail?.name || '' }}
         </div>
 
-        <div class="product-buy-button-wrapper">
-          <div style="cursor: pointer; border-radius: 50px" @click="isInquire = true">
+        <div class="product-buy-button-wrapper" @click="isInquire = true">
+          <div style="display: block; cursor: pointer; border-radius: 50px" >
             {{ $t('productDetail.shopNow') }}
           </div>
         </div>
@@ -77,55 +77,52 @@ import SvgIcon from '~/components/SvgIcon.vue'
 import ContactForm from '~/components/product-detailInfo/ContactForm_singleOption.vue'
 
 const route = useRoute()
-const router = useRouter()
 const isInquire = ref(false)
 const loading = ref(true)
-const productCategoryList = ref<any[]>([])
 const windowWidth = ref('90%')
 onMounted(() => {
   windowWidth.value = globalThis.innerWidth <= 700 ? '90%' : '50%'
 })
 
-const currentId = computed(() => route.query.id as string)
+const currentId = computed(() => route.params.id as string)
 const { t, locale } = useI18n()
 const productBanner = ref([])
 
-const getProductCategoryList = async () => {
-  const data = await useFetchWithLanguage.post(
-    `${import.meta.env.VITE_API_URL}/product/getProductSpuList`,
-    { productCategoryId: route.query.categoryId },
-  )
-  productCategoryList.value = data || []
-}
 
-const { data: productAttrList } = useAsyncData(() => `getproductAttrList-${locale.value}`, async () => {
+const { data: productAttrList } = useAsyncData(() => `getproductAttrList-${locale.value}-${currentId.value}`, async () => {
   const productId = route.params.id as string
   const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
   try {
-    const response = await fetchWithLocale.post(`https://www.ankbit.com:8080/api/product/getProductSpuAttrList`, {
+    const response = await fetchWithLocale.post(`/product/getProductSpuAttrList`, {
       productSpuId: productId
     })
 
-    console.log('获取产品属性列表成功:', response.data || [])
+    console.log('获取产品属性列表成功')
     return response.data || []
   } catch (err) {
     console.warn('获取产品属性列表失败:', err)
     return [] // 返回空数组作为回退
   }
+}, {
+  watch: [locale, currentId]
 })
-const { data: productDetail } = useAsyncData(() => `getproductDetail-${locale.value}`, async () => {
+
+
+const { data: productDetail } = useAsyncData(() => `getproductDetail-${locale.value}-${currentId.value}`, async () => {
   const productId = route.params.id as string
   const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
   try {
-    const response = await fetchWithLocale.get(`https://www.ankbit.com:8080/api/product/getProductSpuDetail?id=${productId}`)
+    const response = await fetchWithLocale.get(`/product/getProductSpuDetail?id=${productId}`)
 
-    console.log('获取产品详情成功:', response.data || [])
+    console.log('获取产品详情成功' )
     return response.data || []
 
   } catch (err) {
     console.warn('获取产品详情失败:', err)
     return []
   }
+}, {
+  watch: [locale, currentId]
 })
 
 
@@ -138,28 +135,6 @@ onMounted(() => {
   loading.value = false
 })
 
-// const productDetailInit = async () => {
-//   const productId = route.query.id as string
-//   if (!productId) return
-//   loading.value = true
-//   const data = await useFetchWithLanguage.get(
-//     `${import.meta.env.VITE_API_URL}/product/getProductSpuDetail?id=${productId}`,
-//   )
-//   const dataAttr = await useFetchWithLanguage.post(
-//     `${import.meta.env.VITE_API_URL}/product/getProductSpuAttrList`,
-//     { productSpuId: productId },
-//   )
-//   productAttrList.value = dataAttr || []
-//   productDetail.value = data
-//   console.log(productDetail.value);
-//   if (productDetail.value.productSpuAboutList.length) {
-//     productBanner.value = productDetail.value.productSpuAboutList.map(item => {
-//       return item.imageUrls[0]
-//     })
-//   }
-//   loading.value = false
-//   getProductCategoryList()
-// }
 
 onMounted(() => {
   // productDetailInit()
@@ -170,9 +145,6 @@ watch([locale, currentId], () => {
 })
 
 
-const handleInquireSubmit = (formData: any) => {
-  isInquire.value = false
-}
 </script>
 
 <style scoped>

@@ -79,11 +79,11 @@ const { data: blogPostsList } = useAsyncData(
     async () => {
         const fetchWithLocale = useFetchWithLanguageWithLocale(locale.value)
         try {
-            const response = await fetchWithLocale.post(`https://www.ankbit.com:8080/api/article/pageList`, {
+            const response = await fetchWithLocale.post(`/article/pageList`, {
                 page: 1,
                 limit: 10
             })
-            console.log('获取分类列表成功:', response?.data?.list?.length || 0)
+            // console.log('获取分类列表成功:', response?.data?.list?.length || 0)
             response?.data?.list?.forEach(item => {
                 item.content = item.content.replace(/&nbsp;/g, ' ')
             })
