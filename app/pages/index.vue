@@ -15,15 +15,20 @@
 
 <script setup>
 import { nextTick, ref, onMounted } from 'vue'
-
+import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 const router = useRouter()
 const route = useRoute()
+const { locale } = useI18n()
 
 // 首页跳转分类全局状态
 const targetCategoryId = useState('targetCategoryId', () => null)
 
 onMounted(() => {
- 
+ if (route.path === `/${locale.value}`) {
+     router.push('/home')
+     nextTick()
+  }
 })
 
 // 顶部导航触发跳转
