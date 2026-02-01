@@ -107,6 +107,12 @@ const menus = computed(() => {
   const list = [
     { id: 1, name: 'navigationBar.Home', url: '/home' },
     { id: 2, name: 'navigationBar.AboutUs', url: '/about' },
+     { name: t('navigationBar.Factory'), url: '/Factory', children: [
+      { id: 3, name: t('navigationBar.Overview'), url: '/Factory/Overview' },
+      { id: 1, name: t('navigationBar.Production'), url: '/Factory/Production' },
+      { id: 2, name: t('navigationBar.Testing'), url: '/Factory/Testing' },
+
+    ] },
     { id: 3, name: 'navigationBar.Products', url: '/products' },
     { id: 4, name: 'navigationBar.Exhibitions', url: '/news' },
     { id: 5, name: 'navigationBar.Blog', url: '/Blog' },

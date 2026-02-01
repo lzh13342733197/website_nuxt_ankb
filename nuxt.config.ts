@@ -4,8 +4,14 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
 
 export default defineNuxtConfig({
+  cssModules: {
+    // 自定义模块化类名格式（可选，默认是 [hash:base64]）
+    localsConvention: 'camelCase', // 支持 styles.cardPeekListWrapper 写法
+    scopeBehaviour: 'local'
+  },
   vite: {
     plugins: [
+      
       createSvgIconsPlugin({
         // 关键修改：路径指向 app/assets/icons/
         iconDirs: [path.resolve(process.cwd(), 'app/assets/icons')],
@@ -18,6 +24,13 @@ export default defineNuxtConfig({
     resolve: {
       alias: {
         '@': path.resolve(process.cwd(), '.')
+      }
+    },
+    css: {
+      preprocessorOptions: {
+        less: {
+          javascriptEnabled: true // 开启 less 内联 JS
+        }
       }
     }
   },
@@ -43,13 +56,13 @@ export default defineNuxtConfig({
     legacy: false,
     locale: 'zh',
     fallbackLocale: 'en',
-    strategy:'prefix',
+    strategy: 'prefix',
     vueI18n: './i18n/index.js',
     allowHtml: true,
     allowHtmlMessage: true,
     locales: [
-      { code: 'zh', name: 'Chinese',iso: 'zh-Hans',  file: 'zh.js' },
-      { code: 'en', name: 'English',iso: 'en-US', file: 'en.js' }
+      { code: 'zh', name: 'Chinese', iso: 'zh-Hans', file: 'zh.js' },
+      { code: 'en', name: 'English', iso: 'en-US', file: 'en.js' }
     ],
     detectBrowserLanguage: {
       enabled: true, // 自动检测浏览器语言
@@ -68,5 +81,6 @@ export default defineNuxtConfig({
     public: {
       apiUrl: process.env.NUXT_API_URL
     }
-  }
+  },
+
 })

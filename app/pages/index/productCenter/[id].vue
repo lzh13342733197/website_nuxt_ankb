@@ -64,7 +64,7 @@ const { data: currentData } = useAsyncData(
         await fetchWithLocale.post(`/product/getProductSpuList`, {
           productCategoryId: productId,
         })
-        console.log('currentData---- fetchList.data')
+        // console.log('currentData---- fetchList.data')
         return fetchList.data
     } catch (error) {
       console.log(error)
