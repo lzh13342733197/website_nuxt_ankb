@@ -1,9 +1,7 @@
 <template>
   <div class="card-peek-wrapper">
-    <!-- 修复核心：绑定模块化类名时，用 kebab-case 或 camelCase 匹配 -->
-    <!-- 方式1：用对象的 kebab-case 键（和 less 中的类名一致） -->
-    <div ref="wrapperRef" :class="styles['card-peek-list-wrapper']">
-      <div ref="cardPeekListRef" :class="styles['card-peek-list']">
+    <div ref="wrapperRef" class="card-peek-list-wrapper">
+      <div ref="cardPeekListRef" class="card-peek-list">
         <card-preview 
           v-for="item in props.cardList" 
           :key="item.id" 
@@ -19,14 +17,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import cardPreview from './card-preview.vue'
-// 路径正确，无需修改
-import styles from '~/components/pc.module.less'
 import { useWindowSize } from '@vueuse/core'
 
 const titleRef = ref<HTMLElement | null>(null)
 const wrapperRef = ref<HTMLElement | null>(null)
 const cardPeekListRef = ref<HTMLElement | null>(null)
-
 let minCardDistance: number = 200
 const documentPosition = ref<any>(null)
 
@@ -38,16 +33,9 @@ const props = defineProps<{
 
 const { width: windowWidth } = useWindowSize()
 
-// 验证：onMounted 中打印 DOM 的类名，确认绑定成功
 onMounted(() => {
-  console.log('wrapperRef 类名：', wrapperRef.value?.className); // 应输出 _card-peek-list-wrapper_z1vuu_34
-  console.log('styles 对象：', styles);
-  
-  // 如果需要给 titleRef 绑定样式
   if (titleRef.value) {
     titleRef.value.style.paddingLeft = `${minCardDistance}px`
-    // 可选：给 titleRef 绑定模块化的 title 样式
-    titleRef.value.className = styles['card-peek-title']
   }
 })
 
@@ -63,14 +51,86 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="less">
+<style scoped>
+/* ========== 容器样式 ========== */
 .card-peek-wrapper {
-  padding: 0 0 20px 0;
+  padding: 40px 0;
+  /* background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%); */
 }
 
-/* 可选：如果子组件内的样式需要生效，用 :deep() 穿透 */
-:deep(.card-preview) {
-  /* 确保 card-preview 组件内的模块化样式生效 */
-  margin: 0 8px;
+.card-peek-list-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  overflow: hidden;
+}
+
+.card-peek-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+  padding: 20px 0;
+}
+
+/* ========== 响应式布局 ========== */
+@media (max-width: 1200px) {
+  .card-peek-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-peek-wrapper {
+    padding: 24px 0;
+  }
+
+  .card-peek-list-wrapper {
+    padding: 0 16px;
+  }
+
+  .card-peek-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-peek-list {
+    gap: 12px;
+  }
+}
+
+/* ========== 加载动画 ========== */
+.card-peek-list :deep(.card-preview-container) {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== 标题样式（如果需要） ========== */
+.card-peek-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 32px;
+  padding-left: 200px;
+}
+
+@media (max-width: 768px) {
+  .card-peek-title {
+    font-size: 24px;
+    padding-left: 0;
+    text-align: center;
+  }
 }
 </style>

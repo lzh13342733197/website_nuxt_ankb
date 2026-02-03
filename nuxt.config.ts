@@ -1,8 +1,7 @@
 // 导入 SVG 图标插件
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 // 导入 Node.js 路径模块（用于拼接目录路径）
-import path from 'path'
-
+import path from 'node:path'
 export default defineNuxtConfig({
   cssModules: {
     // 自定义模块化类名格式（可选，默认是 [hash:base64]）
@@ -11,7 +10,7 @@ export default defineNuxtConfig({
   },
   vite: {
     plugins: [
-      
+
       createSvgIconsPlugin({
         // 关键修改：路径指向 app/assets/icons/
         iconDirs: [path.resolve(process.cwd(), 'app/assets/icons')],
@@ -23,7 +22,7 @@ export default defineNuxtConfig({
     ],
     resolve: {
       alias: {
-        '@': path.resolve(process.cwd(), '.')
+        '@': path.resolve(process.cwd(), '.'),
       }
     },
     css: {
@@ -41,7 +40,7 @@ export default defineNuxtConfig({
     host: '0.0.0.0' // 允许通过本机IP访问
   },
 
-  modules: ['@nuxtjs/i18n', '@nuxt/image'],
+  modules: ['@nuxtjs/i18n', '@nuxt/image', '@pinia/nuxt','pinia-plugin-persistedstate/nuxt'],
   plugins: [{
     src: 'plugins/lazyload.client.js',
   }, {
@@ -71,7 +70,8 @@ export default defineNuxtConfig({
     langDir: 'locales/lang/'
   },
   alias: {
-    '@/assets': './assets'
+    '@/assets': './assets',
+    '@': path.resolve(process.cwd(), '.'),
   },
   // 关键配置
   runtimeConfig: {

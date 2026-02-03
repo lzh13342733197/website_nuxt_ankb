@@ -1,248 +1,361 @@
 <template>
   <header class="header-container">
     <div class="header-content">
-
       <!-- Logo -->
       <div class="nav-item nav-logo">
         <NuxtLink to="/" class="logo-link">
-          <img src="/ankbit.png" class="logo-image" />
+          <img src="/ankbit.png" class="logo-image" alt="Logo" />
         </NuxtLink>
       </div>
 
       <!-- PC Menu -->
       <nav class="nav-item nav-main-menu menu-pc">
-        <div v-for="menu in menus" :key="menu.id" class="main-nav-group">
-          <NuxtLink :to="menu.url" class="main-nav-link" :class="{ 'is-active': menu.isActive }">
-            {{ t(menu.name) }}
+        <div 
+          v-for="menu in menus" 
+          :key="menu.id" 
+          class="main-nav-group" 
+          @mouseenter="openSubMenu(menu.id)"
+          @mouseleave="closeSubMenu(menu.id)">
+          <NuxtLink 
+            :to="menu.url" 
+            class="main-nav-link" 
+            :class="{ 'is-active': menu.isActive }">
+            <span class="nav-text">{{ t(menu.name) }}</span>
+            <span v-if="menu.children && menu.children.length" class="nav-arrow">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M6 8L2 4h8z"/>
+              </svg>
+            </span>
           </NuxtLink>
+          
+          <!-- 子菜单 -->
+          <ul 
+            v-if="menu.children && menu.children.length" 
+            class="sub-nav-group"
+            :class="{ 'is-open': activeSubMenuId === menu.id }">
+            <li v-for="sub in menu.children" :key="sub.id" class="sub-nav-item">
+              <a 
+                v-if="sub.imageUrl" 
+                :href="sub.url" 
+                class="sub-nav-link with-image"
+                :class="{ 'is-active': isPathMatch(sub.url) }">
+                <img :src="sub.imageUrl" alt="Category" class="category-image">
+                <span class="category-name">{{ sub.name }}</span>
+              </a>
+              <a 
+                v-else 
+                :href="sub.url" 
+                class="sub-nav-link"
+                :class="{ 'is-active': isPathMatch(sub.url) }">
+                {{ sub.name }}
+              </a>
+            </li>
+          </ul>
         </div>
       </nav>
 
       <!-- Toolbar -->
       <div class="nav-item nav-toolbar">
-
-        <!-- PC -->
+        <!-- PC Tools -->
         <div class="tools-pc" v-if="!isMobile">
-          <div class="lang-switch">
-            <div class="lang-switch-border" @click="toggleLang">
-              {{ locale === 'zh' ? 'Chinese' : 'English' }}
-              <span>{{ isLangOpen ? '▲' : '▼' }}</span>
-            </div>
-            <ul v-if="isLangOpen" class="mobile-lang-list">
-              <!-- <li @click="switchLocalePath('zh')">中文</li>
-              <li @click="switchLocalePath('en')">English</li> -->
+          <div class="lang-switch-wrapper">
+            <button class="lang-switch-btn" @click="toggleLang">
+              <svg class="lang-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <span class="lang-text">{{ locale === 'zh' ? 'CN' : 'EN' }}</span>
+              <svg class="arrow-icon" :class="{ 'is-open': isLangOpen }" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M6 8L2 4h8z"/>
+              </svg>
+            </button>
+            <ul v-if="isLangOpen" class="lang-dropdown">
               <li>
-                <SwitchLocalePathLink style="   color: black; text-decoration: none;" locale="zh">Chinese
+                <SwitchLocalePathLink class="lang-option" locale="zh">
+                  <span class="lang-flag">🇨🇳</span>
+                  中文
                 </SwitchLocalePathLink>
               </li>
               <li>
-                <SwitchLocalePathLink style="   color: black; text-decoration: none;" locale="en">English
+                <SwitchLocalePathLink class="lang-option" locale="en">
+                  <span class="lang-flag">🇺🇸</span>
+                  English
                 </SwitchLocalePathLink>
               </li>
             </ul>
           </div>
         </div>
 
-        <!-- Mobile -->
+        <!-- Mobile Tools -->
         <div class="tools-mobile">
-          <div class="mobile-lang-switch" @click="isMobileLangOpen = !isMobileLangOpen"
-            @mouseleave="isMobileLangOpen = false">
-            {{ locale === 'zh' ? 'Chinese' : 'English' }}
-            <span class="arrow-icon">{{ isMobileLangOpen ? '▲' : '▼' }}</span>
-            <ul v-if="isMobileLangOpen" class="mobile-lang-list">
-              <li>
-                <SwitchLocalePathLink style=" display: block; color: black; text-decoration: none;" locale="zh">Chinese
+          <div class="mobile-lang-switch" @click="isMobileLangOpen = !isMobileLangOpen">
+            <svg class="lang-icon-mobile" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <span>{{ locale === 'zh' ? 'CN' : 'EN' }}</span>
+            <ul v-if="isMobileLangOpen" class="mobile-lang-dropdown" @click.stop>
+              <li @click="isMobileLangOpen = false">
+                <SwitchLocalePathLink class="mobile-lang-option" locale="zh">
+                  <span class="lang-flag">🇨🇳</span>
+                  中文
                 </SwitchLocalePathLink>
               </li>
-              <li>
-                <SwitchLocalePathLink style=" display: block; color: black; text-decoration: none;" locale="en">English
+              <li @click="isMobileLangOpen = false">
+                <SwitchLocalePathLink class="mobile-lang-option" locale="en">
+                  <span class="lang-flag">🇺🇸</span>
+                  English
                 </SwitchLocalePathLink>
               </li>
             </ul>
           </div>
-          <button class="hamburger-btn" @click="isMobileMenuOpen = !isMobileMenuOpen">
-            ☰
+          
+          <button class="hamburger-btn" @click="isMobileMenuOpen = !isMobileMenuOpen" :class="{ 'is-open': isMobileMenuOpen }">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
           </button>
         </div>
-
       </div>
     </div>
 
     <!-- Mobile Drawer -->
     <client-only>
-      <el-drawer v-model="isMobileMenuOpen" direction="rtl" size="60%" :with-header="false">
-        <nav class="mobile-nav-list" v-if="isMobileMenuOpen">
-          <NuxtLink v-for="menu in menus" :key="menu.id" :to="menu.url" class="mobile-nav-link"
-            :class="{ 'is-active': menu.isActive }" @click="isMobileMenuOpen = false">
-            {{ t(menu.name) }}
-          </NuxtLink>
-        </nav>
-
+      <el-drawer 
+        v-model="isMobileMenuOpen" 
+        direction="rtl" 
+        size="75%" 
+        :with-header="false"
+        class="mobile-drawer">
+        <div class="mobile-drawer-content" v-if="isMobileMenuOpen">
+          <div class="mobile-drawer-header">
+            <img src="/ankbit.png" class="drawer-logo" alt="Logo" />
+          </div>
+          
+          <nav class="mobile-nav-list">
+            <template v-for="menu in menus" :key="menu.id">
+              <div class="mobile-nav-item">
+                <NuxtLink 
+                  :to="menu.url" 
+                  class="mobile-nav-link"
+                  :class="{ 'is-active': menu.isActive }" 
+                  @click="!menu.children && (isMobileMenuOpen = false)">
+                  {{ t(menu.name) }}
+                  <svg v-if="menu.children && menu.children.length" class="expand-icon" width="16" height="16" viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M8 6L4 2v8z"/>
+                  </svg>
+                </NuxtLink>
+                
+                <!-- Mobile Sub Menu -->
+                <ul v-if="menu.children && menu.children.length" class="mobile-sub-nav">
+                  <li v-for="sub in menu.children" :key="sub.id">
+                    <a 
+                      :href="sub.url" 
+                      class="mobile-sub-link"
+                      @click="isMobileMenuOpen = false">
+                      {{ sub.name }}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </template>
+          </nav>
+        </div>
       </el-drawer>
     </client-only>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute } from '#app'
 import { useI18n } from 'vue-i18n'
 import { ElDrawer } from 'element-plus'
+import { useCategoryStore } from '@/stores/category'
+
+type Category = {
+  id: number
+  name: string
+  imageUrl: string
+  url: string
+}
+
+const productCategoryList = ref<Category[]>([])
+const categoryStore = useCategoryStore()
 const route = useRoute()
 const { t, locale } = useI18n()
 const isMobileMenuOpen = ref(false)
 const isMobileLangOpen = ref(false)
 const isLangOpen = ref(false)
 const isMobile = ref(false)
+const activeSubMenuId = ref<number | null>(null)
+
+const openSubMenu = (id: number) => { activeSubMenuId.value = id }
+const closeSubMenu = (id: number) => { activeSubMenuId.value = null }
+const isPathMatch = (menuUrl: string) => {
+  return route.fullPath === menuUrl
+}
+
 onMounted(() => {
-  // 客户端初始化
-  isMobile.value = window.innerWidth <= 768
-  // 监听窗口缩放
+  isMobile.value = window.innerWidth <= 992
   window.addEventListener('resize', () => {
-    isMobile.value = window.innerWidth <= 768
+    isMobile.value = window.innerWidth <= 992
   })
 })
-/* 菜单 */
+
 const menus = computed(() => {
   const list = [
     { id: 1, name: 'navigationBar.Home', url: '/home' },
-    { id: 2, name: 'navigationBar.AboutUs', url: '/about' },
-     { name: t('navigationBar.Factory'), url: '/Factory', children: [
-      { id: 3, name: t('navigationBar.Overview'), url: '/Factory/Overview' },
-      { id: 1, name: t('navigationBar.Production'), url: '/Factory/Production' },
-      { id: 2, name: t('navigationBar.Testing'), url: '/Factory/Testing' },
-
-    ] },
-    { id: 3, name: 'navigationBar.Products', url: '/products' },
+    { 
+      id: 2, 
+      name: 'navigationBar.AboutUs', 
+      url: '/about', 
+      children: [
+        { id: 1, name: t('aboutUs.menu.CompanyProfile'), url: `/${locale.value}/about/CompanyProfile` },
+        { id: 5, name: t('aboutUs.menu.RAD'), url: `/${locale.value}/about/PatentSwiper` },
+        { id: 3, name: t('aboutUs.menu.Awards'), url: `/${locale.value}/about/Awards` },
+        { id: 6, name: t('aboutUs.Credentials'), url: `/${locale.value}/about/Credentials` },
+        { id: 4, name: t('aboutUs.menu.DevelopmentCourse'), url: `/${locale.value}/about/DevelopmentCourse` },
+      ] 
+    },
+    {
+      id: 8, 
+      name: 'navigationBar.Factory', 
+      url: '/Factory', 
+      children: [
+        { id: 81, name: `${t("navigationBar.Overview")}`, url: `/${locale.value}/Factory/Overview` },
+        { id: 82, name: `${t("navigationBar.Production")}`, url: `/${locale.value}/Factory/Production` },
+        { id: 83, name: `${t("navigationBar.Testing")}`, url: `/${locale.value}/Factory/Testing` },
+      ]
+    },
+    { 
+      id: 3, 
+      name: 'navigationBar.Products', 
+      url: '/products',
+      children: productCategoryList.value 
+    },
     { id: 4, name: 'navigationBar.Exhibitions', url: '/news' },
     { id: 5, name: 'navigationBar.Blog', url: '/Blog' },
     { id: 6, name: 'navigationBar.Contact', url: '/contact' }
   ]
-  console.log(route.path)
+
   return list.map(item => ({
     ...item,
     isActive: route.path === `/${locale.value}${item.url}`
   }))
 })
 
-/* 语言切换 */
 const toggleLang = () => {
   isLangOpen.value = !isLangOpen.value
 }
 
-const setLang = (lang: 'zh' | 'en') => {
-  locale.value = lang
-  isLangOpen.value = false
-}
+onMounted(async () => {
+  await nextTick()
+  const categoryList = await categoryStore.fetchCategoryList(locale.value) || []
+  
+  productCategoryList.value = categoryList.map((item: Category) => ({
+    url: `/${locale.value}/ProductCenter/${item.id}`,
+    id: item.id,
+    name: item.name,
+    imageUrl: item.imageUrl
+  }))
+})
+
+watch(() => locale.value, async (newLocale) => {
+  const categoryList = await categoryStore.fetchCategoryList(newLocale) || []
+  productCategoryList.value = categoryList.map((item: Category) => ({
+    url: `/${locale.value}/ProductCenter/${item.id}`,
+    id: item.id,
+    name: item.name,
+    imageUrl: item.imageUrl
+  }))
+})
 </script>
 
 <style scoped>
+/* ========== 基础容器 ========== */
 .header-container {
   position: sticky;
   top: 0;
+  z-index: 1000;
   background: #fff;
-  z-index: 1000;
-  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 70px;
 }
 
-.menu-pc {
-  display: flex;
-  gap: 20px;
+/* ========== Logo ========== */
+.nav-logo {
+  flex-shrink: 0;
 }
 
-.main-nav-link {
-  color: #333;
-  text-decoration: none;
-}
-
-.main-nav-link.is-active {
-  color: #0095d7;
-}
-
-.tools-mobile {
-  display: none;
-}
-
-.hamburger-btn {
-  font-size: 22px;
-  background: none;
-  border: none;
-}
-
-.mobile-nav-link {
+.logo-link {
   display: block;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  text-decoration: none;
-  color: #333;
+  transition: transform 0.3s ease;
 }
 
-.mobile-nav-link.is-active {
-  color: #0095d7;
-}
-
-@media (max-width: 1200px) {
-  .menu-pc {
-    display: none;
-  }
-
-  .tools-mobile {
-    display: block;
-  }
-}
-
-.header-container {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 10px 20px;
+.logo-link:hover {
+  transform: scale(1.05);
 }
 
 .logo-image {
-  height: 60px;
+  height: 50px;
   width: auto;
+  display: block;
 }
 
+/* ========== PC 导航菜单 ========== */
 .menu-pc {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   justify-content: center;
-  margin: 0 20px;
+  gap: 8px;
+  margin: 0 40px;
 }
 
 .main-nav-group {
   position: relative;
-  padding: 0 15px;
-  cursor: pointer;
 }
 
 .main-nav-link {
-  white-space: nowrap;
-  display: block;
-  padding: 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 24px 18px;
   text-decoration: none;
   color: #333;
   font-weight: 500;
-  transition: color 0.3s;
+  font-size: 15px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.main-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0095d7, #00b4d8);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.main-nav-link:hover::after,
+.main-nav-link.is-active::after {
+  width: 60%;
 }
 
 .main-nav-link:hover,
@@ -250,211 +363,403 @@ const setLang = (lang: 'zh' | 'en') => {
   color: #0095d7;
 }
 
-.is-active {
-  color: #0095d7 !important;
+.nav-arrow {
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
 }
 
+.main-nav-group:hover .nav-arrow {
+  transform: rotate(180deg);
+}
+
+/* ========== 子菜单 ========== */
 .sub-nav-group {
   position: absolute;
   top: 100%;
-  left: 0%;
+  left: 50%;
+  transform: translateX(-50%);
   list-style: none;
-  padding: 0;
+  padding: 8px 0;
   margin: 0;
-  background-color: #fff;
-  border: 1px solid #eee;
-  min-width: 150px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: none;
+  background: #fff;
+  border-radius: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
   z-index: 1010;
 }
 
 .sub-nav-group.is-open {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+.sub-nav-item {
+  margin: 0;
 }
 
 .sub-nav-link {
   display: block;
-  padding: 10px 15px;
+  padding: 12px 20px;
   text-decoration: none;
   color: #666;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .sub-nav-link:hover {
-  background-color: #f5f5f5;
+  background: linear-gradient(90deg, #f0f9ff 0%, #e6f7ff 100%);
   color: #0095d7;
+  padding-left: 24px;
+}
+
+.sub-nav-link.is-active {
+  background: linear-gradient(90deg, #e6f7ff 0%, #d4f1ff 100%);
+  color: #0095d7;
+  font-weight: 600;
+}
+
+.sub-nav-link.with-image {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .category-image {
-  width: 50px;
-  height: 50px;
-  margin-right: 5px;
+  width: 45px;
+  height: 45px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+  transition: all 0.2s ease;
 }
 
+.sub-nav-link:hover .category-image {
+  border-color: #0095d7;
+  transform: scale(1.05);
+}
+
+.category-name {
+  min-width: 120px;
+}
+
+/* ========== PC 工具栏 ========== */
 .nav-toolbar {
-  display: flex;
-  align-items: center;
   flex-shrink: 0;
 }
 
 .tools-pc {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
 
-.lang-switch {
+.lang-switch-wrapper {
   position: relative;
 }
 
-.lang-switch-border {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 9px;
-  cursor: pointer;
-  display: flex;
-  width: 100px;
-  justify-content: space-around;
-  position: relative;
-}
-
-.search-box {
+.lang-switch-btn {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
 }
 
-.search-input {
-  border: none;
-  outline: none;
-  width: 120px;
+.lang-switch-btn:hover {
+  border-color: #0095d7;
+  background: #f0f9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 149, 215, 0.15);
 }
 
-.mobile-drawer-inner {
+.lang-icon {
+  stroke-width: 2;
+}
+
+.lang-text {
+  font-weight: 600;
+  min-width: 24px;
+}
+
+.arrow-icon {
+  transition: transform 0.3s ease;
+}
+
+.arrow-icon.is-open {
+  transform: rotate(180deg);
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  list-style: none;
+  padding: 6px;
+  margin: 0;
+  min-width: 140px;
+  z-index: 1020;
+}
+
+.lang-option {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.drawer-logo {
-  padding: 10px 0 20px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.mobile-nav-list {
-  margin-top: 10px;
-}
-
-.mobile-nav-link {
-  display: block;
-  padding: 15px 0;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
   text-decoration: none;
   color: #333;
-  border-bottom: 1px solid #f9f9f9;
-  font-size: 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
-.mobile-nav-link.is-active {
+.lang-option:hover {
+  background: linear-gradient(90deg, #f0f9ff 0%, #e6f7ff 100%);
   color: #0095d7;
-  font-weight: bold;
 }
 
-.mobile-search-box {
-  margin-top: 20px;
-  display: flex;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 4px;
-  justify-content: center;
-  align-items: center;
+.lang-flag {
+  font-size: 18px;
 }
 
-.mobile-search-box .search-input {
-  flex: 1;
-  padding: 8px;
-  border: none;
-}
-
+/* ========== 移动端工具栏 ========== */
 .tools-mobile {
   display: none;
   align-items: center;
-  gap: 15px;
-}
-
-.hamburger-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
+  gap: 16px;
 }
 
 .mobile-lang-switch {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
   cursor: pointer;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mobile-lang-switch:hover {
+  border-color: #0095d7;
+  background: #f0f9ff;
+}
+
+.lang-icon-mobile {
+  stroke-width: 2;
+}
+
+.mobile-lang-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  list-style: none;
+  padding: 6px;
+  margin: 0;
+  min-width: 120px;
+  z-index: 1020;
+}
+
+.mobile-lang-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: #333;
+  border-radius: 6px;
+  transition: all 0.2s ease;
   font-size: 14px;
 }
 
-.mobile-lang-list {
-  position: absolute;
-  width: 100%;
-  top: 100%;
-  right: 0;
-  background: #fff;
-  border: 1px solid #ccc;
-  list-style: none;
-  padding: 5px 0;
-  margin-top: 0;
-  /* 贴合边框 */
-  z-index: 1020;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.mobile-lang-list li {
-  padding: 8px 10px;
-  color: #333;
-}
-
-.active {
-  background-color: #f5f5f5;
-  color: #0095d7 !important;
-}
-
-.mobile-lang-list li:hover {
-  background-color: #f5f5f5;
+.mobile-lang-option:hover {
+  background: #f0f9ff;
   color: #0095d7;
 }
 
-@media (max-width: 992px) {
+/* ========== 汉堡菜单按钮 ========== */
+.hamburger-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
 
-  .menu-pc,
-  .tools-pc {
-    display: none !important;
+.hamburger-line {
+  width: 24px;
+  height: 2.5px;
+  background: #333;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover .hamburger-line {
+  background: #0095d7;
+}
+
+.hamburger-btn.is-open .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger-btn.is-open .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-btn.is-open .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* ========== 移动端抽屉 ========== */
+.mobile-drawer-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+}
+
+.mobile-drawer-header {
+  padding: 20px;
+  border-bottom: 2px solid #e9ecef;
+  background: #fff;
+}
+
+.drawer-logo {
+  height: 40px;
+  width: auto;
+}
+
+.mobile-nav-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.mobile-nav-item {
+  margin-bottom: 4px;
+}
+
+.mobile-nav-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.is-active {
+  background: linear-gradient(90deg, #f0f9ff 0%, transparent 100%);
+  border-left-color: #0095d7;
+  color: #0095d7;
+}
+
+.expand-icon {
+  transition: transform 0.3s ease;
+}
+
+.mobile-sub-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: #f8f9fa;
+}
+
+.mobile-sub-link {
+  display: block;
+  padding: 12px 20px 12px 40px;
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.mobile-sub-link:hover {
+  background: #fff;
+  color: #0095d7;
+  padding-left: 44px;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 1200px) {
+  .header-content {
+    padding: 0 24px;
   }
 
-  .tools-mobile {
-    display: flex;
+  .menu-pc {
+    margin: 0 20px;
+    gap: 4px;
+  }
+
+  .main-nav-link {
+    padding: 24px 14px;
+    font-size: 14px;
   }
 }
 
-@media (min-width: 993px) {
-
+@media (max-width: 992px) {
   .menu-pc,
   .tools-pc {
-    display: flex;
-  }
-
-  .tools-mobile {
     display: none !important;
   }
 
-  .search-input {
-    width: 80px;
+  .tools-mobile {
+    display: flex;
   }
+
+  .header-content {
+    height: 60px;
+    padding: 0 20px;
+  }
+
+  .logo-image {
+    height: 40px;
+  }
+}
+
+.mobile-nav-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mobile-nav-list::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: 3px;
+}
+
+.mobile-nav-list::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0;
 }
 </style>

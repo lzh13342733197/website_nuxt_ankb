@@ -91,7 +91,7 @@ const handlePreviewFormDad = (img) => {
    ==================== */
 @media (max-width: 768px) {
   .patent {
-    padding: 0px 5% 30px;
+    padding: 0px 0 30px;
   }
 
   .patentTitle {

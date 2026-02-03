@@ -15,8 +15,8 @@ export default {
     searchPlaceholder: "请输入搜索关键词",
     showDetails: "显示详情",
     Overview: "工厂概貌",
-    Production: "制造",
-    Testing: "品控",
+    Production: "品质管控",
+    Testing: "品质保证",
   },
   social: {
     followUs: "关注我们",

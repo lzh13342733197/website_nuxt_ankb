@@ -2,7 +2,7 @@
   <div class="productCenter-head" style="margin-bottom: 40px;">
   </div>
   <!-- <SkeletonComponent  /> -->
-  <div style="max-width: 1600px; margin: 0 auto;">
+  <div style="max-width: 1600px; margin: 0 auto; margin-bottom: 400px;">
     <div class="card-wrap-container" style="display: flex; flex-direction: column; gap: 20px;">
       <div class="leftOption">
         <production-option :category-list="categoryList" @changeOption="handleChangeOption" />

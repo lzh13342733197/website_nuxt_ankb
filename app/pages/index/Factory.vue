@@ -8,13 +8,13 @@
     <div class="factory-header">
       <!-- <div class="factory-title">Our Factory</div> -->
       <div class="section-tab-wrapper">
-        <div class="section-tab-item" :class="{ active: currentTab === 'overView' }" @click="switchTab('overView')">
+        <div class="section-tab-item" :class="{ active: currentTab === 'Overview' }" @click="switchTab('Overview')">
           {{ t('factory.Overview.subtitle') }}
         </div>
-        <div class="section-tab-item" :class="{ active: currentTab === 'production' }" @click="switchTab('production')">
+        <div class="section-tab-item" :class="{ active: currentTab === 'Production' }" @click="switchTab('Production')">
           {{ t('factory.production.subtitle') }}
         </div>
-        <div class="section-tab-item" :class="{ active: currentTab === 'testing' }" @click="switchTab('testing')">
+        <div class="section-tab-item" :class="{ active: currentTab === 'Testing' }" @click="switchTab('Testing')">
           {{ t('factory.testing.subtitle') }}
         </div>
       </div>
@@ -42,18 +42,18 @@ onMounted(() => {
   isMobile.value = window.innerWidth <= 768
 })
 // 路由Tab切换状态（优先从路由获取，实现路由联动）
-const currentTab = ref<string>(
-  route.path === `/${locale.value}/Factory/Testing` ? 'testing' : route.path === `/${locale.value}/Factory/Overview` ? 'overView' : 'production'
+const currentTab = computed(() =>
+  route.path === `/${locale.value}/Factory/Testing` ? 'Testing' : route.path === `/${locale.value}/Factory/Overview` ? 'Overview' : 'Production'
 );
 
 // 切换Tab + 路由跳转
-const switchTab = (tab: 'production' | 'testing' | 'overView') => {
-  currentTab.value = tab;
+const switchTab = (tab: 'Production' | 'Testing' | 'Overview') => {
+  // currentTab.value = tab;
   // 根据Tab跳转对应路由
-  if (tab === 'testing') {
+  if (tab === 'Testing') {
     router.push(`/${locale.value}/Factory/Testing`);
-  } else if (tab === 'overView') {
-    router.push(`/${locale.value}/Factory/overView`); // 生产板块默认跳回首页（可根据实际需求修改）
+  } else if (tab === 'Overview') {
+    router.push(`/${locale.value}/Factory/Overview`); // 生产板块默认跳回首页（可根据实际需求修改）
   }
   else {
     router.push(`/${locale.value}/Factory/Production`); // 生产板块默认跳回首页（可根据实际需求修改）
@@ -62,7 +62,7 @@ const switchTab = (tab: 'production' | 'testing' | 'overView') => {
 
 // 监听路由变化，同步Tab状态
 onMounted(() => {
-  currentTab.value = 'overView'
+  // currentTab.value = 'Overview'
   if (route.path === `/${locale.value}/Factory`) {
     router.push(`/${locale.value}/Factory/Overview`)
   }
@@ -89,11 +89,11 @@ const handleEscKey = (e: KeyboardEvent) => {
 
 // 挂载和卸载时绑定/解绑键盘事件
 onMounted(() => {
-  window.addEventListener('keydown', handleEscKey)
+  globalThis.addEventListener('keydown', handleEscKey)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleEscKey)
+  globalThis.removeEventListener('keydown', handleEscKey)
 })
 
 
