@@ -66,7 +66,7 @@
 import facebook from '~/assets/images/footer/Facebook.png'
 import linkedin from '~/assets/images/footer/LinkedIn.png'
 import newTwiter from '~/assets/images/footer/newTwiter.png'
-import youtube from '~/assets/images/footer/youtube.png'
+import youtube from '~/assets/images/footer/Youtube.png'
 </script>
 
 <style scoped>
