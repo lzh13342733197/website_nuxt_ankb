@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import facebook from '~/assets/images/footer/Facebook.png'
-import linkedin from '~/assets/images/footer/linkedin.png'
+import linkedin from '~/assets/images/footer/LinkedIn.png'
 import newTwiter from '~/assets/images/footer/newTwiter.png'
 import youtube from '~/assets/images/footer/youtube.png'
 </script>
