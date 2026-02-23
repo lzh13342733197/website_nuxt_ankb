@@ -8,7 +8,7 @@
     <!-- 下拉选择 -->
     <el-select v-model="activeId" class="category-select" popper-class="category-popper">
       <el-option v-for="item in categoryList" :key="item.id" :label="item.name" :value="item.id">
-        <a :href="`/${locale}/productCenter/${item.id}`" target="_self" class="category-link">{{ item.name }}</a>
+        <a :href="`/productCenter/${item.id}`" target="_self" class="category-link">{{ item.name }}</a>
       </el-option>
     </el-select>
   </div>

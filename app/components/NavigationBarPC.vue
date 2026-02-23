@@ -211,11 +211,11 @@ const menus = computed(() => {
       name: 'navigationBar.AboutUs', 
       url: '/about', 
       children: [
-        { id: 1, name: t('aboutUs.menu.CompanyProfile'), url: `/${locale.value}/about/CompanyProfile` },
-        { id: 5, name: t('aboutUs.menu.RAD'), url: `/${locale.value}/about/PatentSwiper` },
-        { id: 3, name: t('aboutUs.menu.Awards'), url: `/${locale.value}/about/Awards` },
-        { id: 6, name: t('aboutUs.Credentials'), url: `/${locale.value}/about/Credentials` },
-        { id: 4, name: t('aboutUs.menu.DevelopmentCourse'), url: `/${locale.value}/about/DevelopmentCourse` },
+        { id: 1, name: t('aboutUs.menu.CompanyProfile'), url: `/about/CompanyProfile` },
+        { id: 5, name: t('aboutUs.menu.RAD'), url: `/about/PatentSwiper` },
+        { id: 3, name: t('aboutUs.menu.Awards'), url: `/about/Awards` },
+        { id: 6, name: t('aboutUs.Credentials'), url: `/about/Credentials` },
+        { id: 4, name: t('aboutUs.menu.DevelopmentCourse'), url: `/about/DevelopmentCourse` },
       ] 
     },
     {
@@ -223,9 +223,9 @@ const menus = computed(() => {
       name: 'navigationBar.Factory', 
       url: '/Factory', 
       children: [
-        { id: 81, name: `${t("navigationBar.Overview")}`, url: `/${locale.value}/Factory/Overview` },
-        { id: 82, name: `${t("navigationBar.Production")}`, url: `/${locale.value}/Factory/Production` },
-        { id: 83, name: `${t("navigationBar.Testing")}`, url: `/${locale.value}/Factory/Testing` },
+        { id: 81, name: `${t("navigationBar.Overview")}`, url: `/Factory/Overview` },
+        { id: 82, name: `${t("navigationBar.Production")}`, url: `/Factory/Production` },
+        { id: 83, name: `${t("navigationBar.Testing")}`, url: `/Factory/Testing` },
       ]
     },
     { 
@@ -241,7 +241,7 @@ const menus = computed(() => {
 
   return list.map(item => ({
     ...item,
-    isActive: route.path === `/${locale.value}${item.url}`
+    isActive: route.path === `${item.url}`
   }))
 })
 
@@ -254,7 +254,7 @@ onMounted(async () => {
   const categoryList = await categoryStore.fetchCategoryList(locale.value) || []
   
   productCategoryList.value = categoryList.map((item: Category) => ({
-    url: `/${locale.value}/ProductCenter/${item.id}`,
+    url: `/ProductCenter/${item.id}`,
     id: item.id,
     name: item.name,
     imageUrl: item.imageUrl
@@ -264,7 +264,7 @@ onMounted(async () => {
 watch(() => locale.value, async (newLocale) => {
   const categoryList = await categoryStore.fetchCategoryList(newLocale) || []
   productCategoryList.value = categoryList.map((item: Category) => ({
-    url: `/${locale.value}/ProductCenter/${item.id}`,
+    url: `/ProductCenter/${item.id}`,
     id: item.id,
     name: item.name,
     imageUrl: item.imageUrl

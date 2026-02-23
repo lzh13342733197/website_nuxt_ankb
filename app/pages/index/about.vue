@@ -63,11 +63,11 @@ const route = useRoute();
 const isMobileMenuOpen = ref(false);
 
 const menuItems = computed(() => [
-    { id: 1, text: t('aboutUs.menu.CompanyProfile'), path: `/${locale.value}/about/CompanyProfile` },
-    { id: 5, text: t('aboutUs.menu.RAD'), path: `/${locale.value}/about/PatentSwiper` },
-    { id: 3, text: t('aboutUs.menu.Awards'), path: `/${locale.value}/about/Awards` },
-    { id: 6, text: t('aboutUs.Credentials'), path: `/${locale.value}/about/Credentials` },
-    { id: 4, text: t('aboutUs.menu.DevelopmentCourse'), path: `/${locale.value}/about/DevelopmentCourse` },
+    { id: 1, text: t('aboutUs.menu.CompanyProfile'), path: `/about/CompanyProfile` },
+    { id: 5, text: t('aboutUs.menu.RAD'), path: `/about/PatentSwiper` },
+    { id: 3, text: t('aboutUs.menu.Awards'), path: `/about/Awards` },
+    { id: 6, text: t('aboutUs.Credentials'), path: `/about/Credentials` },
+    { id: 4, text: t('aboutUs.menu.DevelopmentCourse'), path: `/about/DevelopmentCourse` },
 ]);
 
 const currentTitle = computed(() => {
@@ -83,8 +83,8 @@ const goTo = (item) => {
     isMobileMenuOpen.value = false;
 };
 onMounted(() => {
-    if(route.path === `/${locale.value}/about`) {
-        router.push(`/${locale.value}/about/CompanyProfile`);
+    if(route.path === `/about`) {
+        router.push(`/about/CompanyProfile`);
     }
 });
 </script>

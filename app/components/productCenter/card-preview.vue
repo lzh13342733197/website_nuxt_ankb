@@ -1,5 +1,5 @@
 <template>
-  <a :href="`/${locale}/product-detailInfo/${props.detail.id}`" class="card-preview-link">
+  <a :href="`/product-detailInfo/${props.detail.id}`" class="card-preview-link">
     <div class="card-preview-container">
       <!-- 产品图片区域 -->
       <div class="card-image-wrapper">
