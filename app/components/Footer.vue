@@ -5,7 +5,7 @@
     <hr />
     <div class="copyright-statement">@copyright</div>
     <div class="copyright-statement">
-      <router-link :to="`/${locale}/privacy`" target="_blank" class="privacy-policy">
+      <router-link :to="`/privacy`" target="_blank" class="privacy-policy">
         privacy Policy</router-link>
     </div>
   </div>

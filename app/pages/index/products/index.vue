@@ -5,7 +5,7 @@
     <div class="category-list">
       <div class="category-item" v-for="category in categoryList" :key="category.id"
         >
-        <a :href="`/${locale}/productCenter/${category.id}`">
+        <a :href="`/productCenter/${category.id}`">
         <!-- 右侧图片区域 -->
         <div class="category-image-wrapper">
           <img :src="isMobile ? category.imageMobileUrl : category.imagePCUrl" :alt="category.name"

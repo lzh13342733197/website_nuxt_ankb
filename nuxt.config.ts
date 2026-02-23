@@ -51,16 +51,16 @@ export default defineNuxtConfig({
   }],
   middleware: ['auth'],
   i18n: {
-    defaultLocale: 'zh',
+    defaultLocale: 'en',
     legacy: false,
-    locale: 'zh',
+    locale: 'en',
     fallbackLocale: 'en',
-    strategy: 'prefix',
+    strategy: 'no_prefix',
     vueI18n: './i18n/index.js',
     allowHtml: true,
     allowHtmlMessage: true,
     locales: [
-      { code: 'zh', name: 'Chinese', iso: 'zh-Hans', file: 'zh.js' },
+      // { code: 'zh', name: 'Chinese', iso: 'zh-Hans', file: 'zh.js' },
       { code: 'en', name: 'English', iso: 'en-US', file: 'en.js' }
     ],
     detectBrowserLanguage: {

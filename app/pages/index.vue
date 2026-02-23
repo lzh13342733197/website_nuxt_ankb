@@ -25,7 +25,7 @@ const { locale } = useI18n()
 const targetCategoryId = useState('targetCategoryId', () => null)
 
 onMounted(() => {
- if (route.path === `/${locale.value}`) {
+ if (route.path === ``) {
      router.push('/home')
      nextTick()
   }
