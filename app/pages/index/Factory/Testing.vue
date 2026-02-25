@@ -110,7 +110,7 @@ onMounted(() => {
 
 // 路由Tab切换状态（优先从路由获取，实现路由联动）
 const currentTab = ref<string>(
-  route.path === `${locale.value}/Factory/Testing` ? 'QA' : route.path === `${locale.value}/Factory/Overview` ? `${locale.value}/Factory/Overview` : `${locale.value}/Factory/Production`
+  route.path === `Factory/Testing` ? 'QA' : route.path === `Factory/Overview` ? `Factory/Overview` : `Factory/Production`
 );
 
 // 切换Tab + 路由跳转
@@ -118,11 +118,11 @@ const switchTab = (tab: 'production' | 'QA' | 'overView') => {
   currentTab.value = tab;
   // 根据Tab跳转对应路由
   if (tab === 'QA') {
-    router.push(`${locale.value}/Factory/Testing`);
+    router.push(`Factory/Testing`);
   } else if (tab === 'overView') {
-    router.push(`${locale.value}/Factory/Overview`);
+    router.push(`Factory/Overview`);
   } else {
-    router.push(`${locale.value}/Factory/Production`); // 生产板块默认跳回首页（可根据实际需求修改）
+    router.push(`Factory/Production`); // 生产板块默认跳回首页（可根据实际需求修改）
   }
 };
 
