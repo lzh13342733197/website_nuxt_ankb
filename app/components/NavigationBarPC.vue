@@ -10,43 +10,27 @@
 
       <!-- PC Menu -->
       <nav class="nav-item nav-main-menu menu-pc">
-        <div 
-          v-for="menu in menus" 
-          :key="menu.id" 
-          class="main-nav-group" 
-          @mouseenter="openSubMenu(menu.id)"
+        <div v-for="menu in menus" :key="menu.id" class="main-nav-group" @mouseenter="openSubMenu(menu.id)"
           @mouseleave="closeSubMenu(menu.id)">
-          <NuxtLink 
-            :to="menu.url" 
-            class="main-nav-link" 
-            :class="{ 'is-active': menu.isActive }">
+          <NuxtLink :to="menu.url" class="main-nav-link" :class="{ 'is-active': menu.isActive }">
             <span class="nav-text">{{ t(menu.name) }}</span>
             <span v-if="menu.children && menu.children.length" class="nav-arrow">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                <path d="M6 8L2 4h8z"/>
+                <path d="M6 8L2 4h8z" />
               </svg>
             </span>
           </NuxtLink>
-          
+
           <!-- 子菜单 -->
-          <ul 
-            v-if="menu.children && menu.children.length" 
-            class="sub-nav-group"
+          <ul v-if="menu.children && menu.children.length" class="sub-nav-group"
             :class="{ 'is-open': activeSubMenuId === menu.id }">
             <li v-for="sub in menu.children" :key="sub.id" class="sub-nav-item">
-              <a 
-                v-if="sub.imageUrl" 
-                :href="sub.url" 
-                class="sub-nav-link with-image"
+              <a v-if="sub.imageUrl" :href="sub.url" class="sub-nav-link with-image"
                 :class="{ 'is-active': isPathMatch(sub.url) }">
                 <img :src="sub.imageUrl" alt="Category" class="category-image">
                 <span class="category-name">{{ sub.name }}</span>
               </a>
-              <a 
-                v-else 
-                :href="sub.url" 
-                class="sub-nav-link"
-                :class="{ 'is-active': isPathMatch(sub.url) }">
+              <a v-else :href="sub.url" class="sub-nav-link" :class="{ 'is-active': isPathMatch(sub.url) }">
                 {{ sub.name }}
               </a>
             </li>
@@ -54,105 +38,70 @@
         </div>
       </nav>
 
-      <!-- Toolbar -->
-      <div class="nav-item nav-toolbar">
-        <!-- PC Tools -->
-        <div class="tools-pc" v-if="!isMobile">
-          <div class="lang-switch-wrapper">
-            <button class="lang-switch-btn" @click="toggleLang">
-              <svg class="lang-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-              </svg>
-              <span class="lang-text">{{ locale === 'zh' ? 'CN' : 'EN' }}</span>
-              <svg class="arrow-icon" :class="{ 'is-open': isLangOpen }" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                <path d="M6 8L2 4h8z"/>
-              </svg>
-            </button>
-            <ul v-if="isLangOpen" class="lang-dropdown">
-              <li>
-                <SwitchLocalePathLink class="lang-option" locale="zh">
-                  <span class="lang-flag">🇨🇳</span>
-                  中文
-                </SwitchLocalePathLink>
-              </li>
-              <li>
-                <SwitchLocalePathLink class="lang-option" locale="en">
-                  <span class="lang-flag">🇺🇸</span>
-                  English
-                </SwitchLocalePathLink>
-              </li>
-            </ul>
-          </div>
+      <!-- PC端搜索框（移动端隐藏） -->
+      <div class="search-box search-box-pc" @click="isSearchExpanded = true; isMobileMenuOpen = false">
+        <input type="text" :placeholder="t('navigationBar.pleaseInputKeyword')" class="search-input"
+          @keydown.enter.prevent>
+        <div class="search-icon"
+          style="color: white; text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 2px 0 black;">
+          <SvgIcon :name="`search`" size="25" color="white" style="filter: drop-shadow(0 0 1px black); ">
+          </SvgIcon>
         </div>
+      </div>
 
+      <div class="nav-item nav-toolbar">
         <!-- Mobile Tools -->
         <div class="tools-mobile">
-          <div class="mobile-lang-switch" @click="isMobileLangOpen = !isMobileLangOpen">
-            <svg class="lang-icon-mobile" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-            <span>{{ locale === 'zh' ? 'CN' : 'EN' }}</span>
-            <ul v-if="isMobileLangOpen" class="mobile-lang-dropdown" @click.stop>
-              <li @click="isMobileLangOpen = false">
-                <SwitchLocalePathLink class="mobile-lang-option" locale="zh">
-                  <span class="lang-flag">🇨🇳</span>
-                  中文
-                </SwitchLocalePathLink>
-              </li>
-              <li @click="isMobileLangOpen = false">
-                <SwitchLocalePathLink class="mobile-lang-option" locale="en">
-                  <span class="lang-flag">🇺🇸</span>
-                  English
-                </SwitchLocalePathLink>
-              </li>
-            </ul>
-          </div>
-          
-          <button class="hamburger-btn" @click="isMobileMenuOpen = !isMobileMenuOpen" :class="{ 'is-open': isMobileMenuOpen }">
+          <button class="hamburger-btn" @click="isMobileMenuOpen = !isMobileMenuOpen"
+            :class="{ 'is-open': isMobileMenuOpen }">
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
           </button>
         </div>
       </div>
+
+      <!-- 搜索弹窗组件 -->
+      <div>
+        <SearchModal :is-visible="isSearchExpanded" @close="closeSearch" @select="handleSearchSelect"
+          @open="isSearchExpanded = true" />
+      </div>
     </div>
 
     <!-- Mobile Drawer -->
     <client-only>
-      <el-drawer 
-        v-model="isMobileMenuOpen" 
-        direction="rtl" 
-        size="75%" 
-        :with-header="false"
-        class="mobile-drawer">
+      <el-drawer v-model="isMobileMenuOpen" direction="rtl" size="75%" :with-header="false" class="mobile-drawer">
         <div class="mobile-drawer-content" v-if="isMobileMenuOpen">
           <div class="mobile-drawer-header">
             <img src="/ankbit.png" class="drawer-logo" alt="Logo" />
+            <!-- 移动端搜索框（仅在抽屉中显示） -->
+            <div class="search-box search-box-mobile" @click="isSearchExpanded = true; isMobileMenuOpen = false">
+              <input type="text" :placeholder="t('navigationBar.pleaseInputKeyword')" class="search-input"
+                @keydown.enter.prevent>
+              <div class="search-icon"
+                style="color: white; text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 2px 0 black;">
+                <SvgIcon :name="`search`" size="25" color="white" style="filter: drop-shadow(0 0 1px black); ">
+                </SvgIcon>
+              </div>
+            </div>
           </div>
-          
+
           <nav class="mobile-nav-list">
             <template v-for="menu in menus" :key="menu.id">
               <div class="mobile-nav-item">
-                <NuxtLink 
-                  :to="menu.url" 
-                  class="mobile-nav-link"
-                  :class="{ 'is-active': menu.isActive }" 
+                <NuxtLink :to="menu.url" class="mobile-nav-link" :class="{ 'is-active': menu.isActive }"
                   @click="!menu.children && (isMobileMenuOpen = false)">
                   {{ t(menu.name) }}
-                  <svg v-if="menu.children && menu.children.length" class="expand-icon" width="16" height="16" viewBox="0 0 12 12" fill="currentColor">
-                    <path d="M8 6L4 2v8z"/>
+                  <svg v-if="menu.children && menu.children.length" class="expand-icon" width="16" height="16"
+                    viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M8 6L4 2v8z" />
                   </svg>
                 </NuxtLink>
-                
+
                 <!-- Mobile Sub Menu -->
                 <ul v-if="menu.children && menu.children.length" class="mobile-sub-nav">
                   <li v-for="sub in menu.children" :key="sub.id">
-                    <a 
-                      :href="sub.url" 
-                      class="mobile-sub-link"
-                      @click="isMobileMenuOpen = false">
+                    <a :href="sub.url" class="mobile-sub-link" @click="isMobileMenuOpen = false">
                       {{ sub.name }}
                     </a>
                   </li>
@@ -180,22 +129,34 @@ type Category = {
   url: string
 }
 
+// 搜索相关
+const isSearchExpanded = ref(false)
+const closeSearch = () => { isSearchExpanded.value = false }
+const handleSearchSelect = (result: any) => { console.log('Selected search result:', result) }
+
+// 分类数据
 const productCategoryList = ref<Category[]>([])
 const categoryStore = useCategoryStore()
 const route = useRoute()
 const { t, locale } = useI18n()
+
+// 移动端状态
 const isMobileMenuOpen = ref(false)
 const isMobileLangOpen = ref(false)
 const isLangOpen = ref(false)
 const isMobile = ref(false)
 const activeSubMenuId = ref<number | null>(null)
 
+// 子菜单控制
 const openSubMenu = (id: number) => { activeSubMenuId.value = id }
 const closeSubMenu = (id: number) => { activeSubMenuId.value = null }
+
+// 路径匹配
 const isPathMatch = (menuUrl: string) => {
   return route.fullPath === menuUrl
 }
 
+// 监听窗口大小
 onMounted(() => {
   isMobile.value = window.innerWidth <= 992
   window.addEventListener('resize', () => {
@@ -203,36 +164,37 @@ onMounted(() => {
   })
 })
 
+// 导航菜单数据
 const menus = computed(() => {
   const list = [
     { id: 1, name: 'navigationBar.Home', url: '/home' },
-    { 
-      id: 2, 
-      name: 'navigationBar.AboutUs', 
-      url: '/about', 
+    {
+      id: 2,
+      name: 'navigationBar.AboutUs',
+      url: '/about',
       children: [
         { id: 1, name: t('aboutUs.menu.CompanyProfile'), url: `/about/CompanyProfile` },
         { id: 5, name: t('aboutUs.menu.RAD'), url: `/about/PatentSwiper` },
         { id: 3, name: t('aboutUs.menu.Awards'), url: `/about/Awards` },
         { id: 6, name: t('aboutUs.Credentials'), url: `/about/Credentials` },
         { id: 4, name: t('aboutUs.menu.DevelopmentCourse'), url: `/about/DevelopmentCourse` },
-      ] 
+      ]
     },
     {
-      id: 8, 
-      name: 'navigationBar.Factory', 
-      url: '/Factory', 
+      id: 8,
+      name: 'navigationBar.Factory',
+      url: '/Factory',
       children: [
         { id: 81, name: `${t("navigationBar.Overview")}`, url: `/Factory/Overview` },
         { id: 82, name: `${t("navigationBar.Production")}`, url: `/Factory/Production` },
         { id: 83, name: `${t("navigationBar.Testing")}`, url: `/Factory/Testing` },
       ]
     },
-    { 
-      id: 3, 
-      name: 'navigationBar.Products', 
+    {
+      id: 3,
+      name: 'navigationBar.Products',
       url: '/products',
-      children: productCategoryList.value 
+      children: productCategoryList.value
     },
     { id: 4, name: 'navigationBar.Exhibitions', url: '/news' },
     { id: 5, name: 'navigationBar.Blog', url: '/Blog' },
@@ -245,14 +207,16 @@ const menus = computed(() => {
   }))
 })
 
+// 语言切换
 const toggleLang = () => {
   isLangOpen.value = !isLangOpen.value
 }
 
+// 加载分类数据
 onMounted(async () => {
   await nextTick()
   const categoryList = await categoryStore.fetchCategoryList(locale.value) || []
-  
+
   productCategoryList.value = categoryList.map((item: Category) => ({
     url: `/ProductCenter/${item.id}`,
     id: item.id,
@@ -261,6 +225,7 @@ onMounted(async () => {
   }))
 })
 
+// 监听语言变化更新分类
 watch(() => locale.value, async (newLocale) => {
   const categoryList = await categoryStore.fetchCategoryList(newLocale) || []
   productCategoryList.value = categoryList.map((item: Category) => ({
@@ -650,11 +615,15 @@ watch(() => locale.value, async (newLocale) => {
   padding: 20px;
   border-bottom: 2px solid #e9ecef;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 增加logo和搜索框的间距 */
 }
 
 .drawer-logo {
   height: 40px;
   width: auto;
+  align-self: flex-start; /* logo左对齐 */
 }
 
 .mobile-nav-list {
@@ -713,6 +682,49 @@ watch(() => locale.value, async (newLocale) => {
   padding-left: 44px;
 }
 
+/* ========== 搜索框样式 ========== */
+.search-box-pc {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.search-box-mobile {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 10px;
+  cursor: pointer;
+  width: 100%; /* 移动端搜索框占满宽度 */
+  box-sizing: border-box;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+}
+
+.search-box-pc .search-input {
+  width: 120px; /* PC端搜索框宽度 */
+}
+
+.search-box-mobile .search-input {
+  flex: 1; /* 移动端输入框占满剩余宽度 */
+  font-size: 14px;
+  padding: 2px 0;
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+
 /* ========== 响应式 ========== */
 @media (max-width: 1200px) {
   .header-content {
@@ -731,11 +743,14 @@ watch(() => locale.value, async (newLocale) => {
 }
 
 @media (max-width: 992px) {
+  /* 移动端隐藏PC搜索框和PC工具栏 */
   .menu-pc,
-  .tools-pc {
+  .tools-pc,
+  .search-box-pc {
     display: none !important;
   }
 
+  /* 显示移动端工具栏 */
   .tools-mobile {
     display: flex;
   }
@@ -748,8 +763,15 @@ watch(() => locale.value, async (newLocale) => {
   .logo-image {
     height: 40px;
   }
+  .nav-toolbar {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: right;
+}
 }
 
+/* 滚动条样式 */
 .mobile-nav-list::-webkit-scrollbar {
   width: 6px;
 }

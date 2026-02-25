@@ -21,6 +21,10 @@ import axios from 'axios'
 // 获取运行时配置
 import { useI18n } from 'vue-i18n'
 onMounted(async () => {
+    if (window.innerWidth < 768) {
+     deviceType.value = 'mobile'
+     getswiperList()
+    }
 
 })
 const { locale } = useI18n() // 当前语言
@@ -50,21 +54,12 @@ const { data: templateData } = useAsyncData(
     }
 )
 // 简化设备类型判断，服务端默认使用'mobile'
-const getDeviceType = () => {
-    // 在Nuxt中应该使用 process.client 检测客户端环境
-    if (import.meta.client && window.innerWidth > 768) {
-        return 'pc'
-    } else if (import.meta.server) {
-        return 'pc'
-    }
-    return 'mobile'
-}
+const deviceType = ref('pc')
 
 const { data: swiperList } = useAsyncData('bannerData', async () => {
     try {
-        const deviceType = getDeviceType()
-        console.log('banner/list:', deviceType)
-        const response = await axios.post(`https://www.ankbit.com:8080/api/banner/list`, { type: deviceType }, {
+
+        const response = await axios.post(`https://www.ankbit.com:8080/api/banner/list`, { type: deviceType.value }, {
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -86,6 +81,19 @@ const { data: swiperList } = useAsyncData('bannerData', async () => {
     }
 })
 
+const getswiperList = async () => {
+    const response = await axios.post(`https://www.ankbit.com:8080/api/banner/list`, { type: deviceType.value }, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+    swiperList.value = response.data.data.map((item) => ({
+        src: item.imageUrl,
+        url: item.linkUrl,
+        alt: item.title,
+        ...item
+    }))
+}
 </script>
 
 

@@ -57,4 +57,7 @@ const handleJumpToCategory = async (id) => {
 :deep(.el-popup-parent--hidden) {
   width: 100%;
 }
+body {
+  margin: 0;
+}
 </style>
